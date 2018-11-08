@@ -10,15 +10,18 @@ int sources_write(const char *fname)
 	size_t written;
 	FILE *fp;
 
+	if(!SOURCETAR_BYTES || !SOURCETAR_LEN)
+		return 1;
+
 	fp = fopen(fname, "w");
 	if(!fp)
-		return -1;
+		return 2;
 
 	written = fwrite(SOURCETAR_BYTES, 1, SOURCETAR_LEN, fp);
 
 	if(written < SOURCETAR_LEN) {
 		fclose(fp);
-		return -1;
+		return 3;
 	}
 
 	fclose(fp);

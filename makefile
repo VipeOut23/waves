@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -o waves -DSOURCES
+CFLAGS = -Wall -o waves
 SRC = waves.c
 
 waves: sources $(SRC)

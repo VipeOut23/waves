@@ -4,13 +4,31 @@
 #include <string.h>
 #include <stdlib.h>
 #include <getopt.h>
+#include <sysexits.h>
 
-#ifdef SOURCES
 #include "sources.h"
-#endif
 
-#define PI 3.1415
-#define WIDTH 80
+#define HELPTEXT \
+	"Waves.\t A little toy for plotting a sinus curve with text (stdin)\n"\
+	"\n"\
+	"Usage:\n"\
+	"  waves [-t <text>] [-w <num>] [-W <num>] [-s <num>] [...]\n"\
+	"\n"\
+	"Options:\n"\
+	"  -t --text\t\t Specify text to use in the curve instead of stdin\n"\
+	"  -w --width\t\t Specify the width of a text \"chunk\"(default: 1)\n"\
+	"  -W --output-width\t Specify the amplitude of the curve\n"\
+	"\t\t\t (e.g. Terminal width) (default: 80\n"\
+	"  -s --steps\t\t How many steps are made per curve cycle\n"\
+	"\t\t\t (somewhat the reverse frequency) (default: 20)\n"\
+	"  --sin-precision\t Specify, how many iterations of the taylor\n"\
+	"\t\t\t sequence are used; Sane: 8-11(Default: 9)\n"\
+	"  --sources\t\t Save the sources in ./waves-src.tgz\n"\
+	"  -? -h --help\t\t Well, you're here now\n"\
+	"\n"\
+	"\n"\
+
+#define PI 3.1415 /* accurate enough */
 
 static short *offsets;
 
@@ -107,8 +125,9 @@ static inline void do_waves_stdin()
 	int  bindex = 0;
 
 	for(char c = getc(stdin); c != EOF; c = getc(stdin)) {
-		if(c != '\n' && c != '\r')
+		if(c != '\n' && c != '\r' && c != ' ')
 			buf[bindex++] = c;
+		/* flush */
 		if(bindex >= settings.text_len) {
 			if(++index >= max)
 				index = 0;
@@ -141,20 +160,20 @@ int main(int argc, char **argv)
 	int  parsed;
 
 	int           longind    = 0;
-	const char    *optstring = "t:w:W:s:";
+	const char    *optstring = "t:w:W:s:h?";
 	struct option longopts[] = {
 				    {"text", required_argument, NULL, 't'},
 				    {"width", required_argument, NULL, 'w'},
 				    {"output-width", required_argument, NULL, 'W'},
 				    {"steps", required_argument, NULL, 's'},
 				    {"sin-precision", required_argument, NULL, 0},
-#ifdef SOURCES
 				    {"sources", no_argument, NULL, 0},
-#endif
+				    {"help", no_argument, NULL, 'h'},
 				    {NULL, no_argument, NULL, 0}
 	};
 
 	/* defaults */
+	settings.text_len = 1;
 	settings.center   = 40;
 	settings.steps    = 20;
 	settings.prec     = 9;
@@ -169,8 +188,8 @@ int main(int argc, char **argv)
 		case 'w':
 			parsed = strtol(optarg, &endptr, 10);
 			if(endptr == optarg) {
-				fprintf(stderr, "%s is not a number.", optarg);
-				return -1;
+				fprintf(stderr, "%s is not a number.\n", optarg);
+				return EX_USAGE;
 			}
 			settings.text_len = parsed;
 
@@ -178,8 +197,8 @@ int main(int argc, char **argv)
 		case 'W':
 			parsed = strtol(optarg, &endptr, 10);
 			if(endptr == optarg) {
-				fprintf(stderr, "%s is not a number.", optarg);
-				return -1;
+				fprintf(stderr, "%s is not a number.\n", optarg);
+				return EX_USAGE;
 			}
 			settings.center = parsed/2;
 
@@ -187,32 +206,42 @@ int main(int argc, char **argv)
 		case 's':
 			parsed = strtol(optarg, &endptr, 10);
 			if(endptr == optarg) {
-				fprintf(stderr, "%s is not a number.", optarg);
-				return -1;
+				fprintf(stderr, "%s is not a number.\n", optarg);
+				    return EX_USAGE;
 			}
 			settings.steps = parsed;
 
 			break;
+		case 'h': /* fallthrough */
+		case '?':
+			puts(HELPTEXT);
+			return 0;
 		case 0:
 		    if(!strcmp("sin-precision", longopts[longind].name)) {
 			    parsed = strtol(optarg, &endptr, 10);
 			    if(endptr == optarg) {
-				    fprintf(stderr, "%s is not a number.", optarg);
-				    return -1;
+				    fprintf(stderr, "%s is not a number.\n", optarg);
+				    return EX_USAGE;
 			    }
 			    if(parsed > 11) {
 				    fprintf(stderr, "Precision > 11 is not possible\n");
-				    return -1;
+				    return EX_USAGE;
 			    }
 			    settings.prec = parsed;
 		    }
-#ifdef SOURCES
+
 		    if(!strcmp("sources", longopts[longind].name)) {
-			    sources_write("waves-src.tgz");
+			    switch(sources_write("waves-src.tgz")) {
+			    case 1: fprintf(stderr, "Sources not included...\n");
+				    return EX_UNAVAILABLE;
+			    case 2: fprintf(stderr, "Could not open \"./waves-src.tgz\"...\n");
+				    return EX_IOERR;
+			    case 3: fprintf(stderr, "Write error occoured...\n");
+				    return EX_IOERR;
+			    }
 			    cleanup();
 			    return 0;
 		    }
-#endif
 		    break;
 		}
 	}
