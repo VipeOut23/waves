@@ -24,9 +24,7 @@
 	"  --sin-precision\t Specify, how many iterations of the taylor\n"\
 	"\t\t\t sequence are used; Sane: 8-11(Default: 9)\n"\
 	"  --sources\t\t Save the sources in ./waves-src.tgz\n"\
-	"  -? -h --help\t\t Well, you're here now\n"\
-	"\n"\
-	"\n"\
+	"  -? -h --help\t\t Well, you're here now"
 
 #define PI 3.1415 /* accurate enough */
 
