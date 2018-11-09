@@ -12,7 +12,7 @@ Options:
   -s --steps		 How many steps are made per curve cycle
 			 (somewhat the reverse frequency) (default: 20)
   --sin-precision	 Specify, how many iterations of the taylor
-			 sequence are used; Sane: 8-11(Default: 9)
+			 series are used; Sane: 8-11(Default: 9)
   --sources		 Save the sources in ./waves-src.tgz
   -? -h --help		 Well, you're here now
 ```
