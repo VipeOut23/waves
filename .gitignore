@@ -2,3 +2,5 @@ waves
 *.o
 sources.c
 TAGS
+*~
+#*#

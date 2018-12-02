@@ -16,15 +16,15 @@
 	"\n"\
 	"Options:\n"\
 	"  -t --text\t\t Specify text to use in the curve instead of stdin\n"\
-	"  -w --width\t\t Specify the width of a text \"chunk\"(default: 1)\n"\
+	"  -w --width\t\t Specify the width of a text \"chunk\"(stdin only)(default: 1)\n"\
 	"  -W --output-width\t Specify the amplitude of the curve\n"\
-	"\t\t\t (e.g. Terminal width) (default: 80\n"\
+	"\t\t\t (e.g. Terminal width) (default: 80)\n"\
 	"  -s --steps\t\t How many steps are made per curve cycle\n"\
 	"\t\t\t (somewhat the reverse frequency) (default: 20)\n"\
 	"  --sin-precision\t Specify, how many iterations of the taylor\n"\
 	"\t\t\t series are used; Sane: 8-11(Default: 9)\n"\
 	"  --sources\t\t Save the sources in ./waves-src.tgz\n"\
-	"  -? -h --help\t\t Well, you're here now"
+	"  -? -h --help\t\t Well, you're here now :^)"
 
 #define PI 3.1415 /* accurate enough */
 
